@@ -3,18 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мой сайт на C и GitHub Pages</title>
+    <title>Simalee | Портфолио & Сервисы</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f9; text-align: center; padding: 50px; }
-        .card { background: white; padding: 30px; border-radius: 12px; display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        h1 { color: #333; }
-        p { color: #666; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #0f172a; color: #f8fafc; display: flex; flex-direction: column; min-height: 100vh; }
+        header { background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(10px); padding: 20px 10%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; position: sticky; top: 0; }
+        .logo { font-size: 24px; font-weight: bold; color: #38bdf8; text-decoration: none; }
+        .hero { text-align: center; padding: 100px 20px 60px; max-width: 800px; margin: 0 auto; }
+        .hero h1 { font-size: 48px; margin-bottom: 20px; background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { font-size: 18px; color: #94a3b8; margin-bottom: 30px; line-height: 1.6; }
+        .btn { display: inline-block; background: #38bdf8; color: #0f172a; padding: 12px 32px; border-radius: 8px; font-weight: 600; text-decoration: none; transition: 0.3s; }
+        .btn:hover { background: #7dd3fc; transform: translateY(-2px); }
+        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; padding: 40px 10%; max-width: 1200px; margin: 0 auto; width: 100%; }
+        .card { background: #1e293b; padding: 30px; border-radius: 12px; border: 1px solid #334155; transition: 0.3s; }
+        .card:hover { border-color: #38bdf8; transform: translateY(-5px); }
+        .card h3 { font-size: 20px; margin-bottom: 10px; color: #f1f5f9; }
+        .card p { color: #94a3b8; font-size: 14px; line-height: 1.5; }
+        footer { margin-top: auto; text-align: center; padding: 30px; border-top: 1px solid #334155; color: #64748b; font-size: 14px; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>Сайт сгенерирован на языке C!</h1>
-        <p>Создано в Visual Studio и опубликовано через GitHub Pages.</p>
-    </div>
+    <header>
+        <a href="#" class="logo">Simalee</a>
+    </header>
+    <main>
+        <section class="hero">
+            <h1>Современные веб-решения</h1>
+            <p>Этот сайт полностью сгенерирован с помощью собственного генератора на языке C и опубликован на GitHub Pages.</p>
+            <a href="https://github.com/simaleee/Clients_simalee" class="btn" target="_blank">Исходный код на GitHub</a>
+        </section>
+        <section class="features">
+            <div class="card">
+                <h3>⚡ Быстродействие</h3>
+                <p>Чистый HTML/CSS без лишних тяжелых библиотек загружается мгновенно.</p>
+            </div>
+            <div class="card">
+                <h3>⚙️ C-Core</h3>
+                <p>Сборка и структура страницы формируются через консольное приложение C в Visual Studio.</p>
+            </div>
+            <div class="card">
+                <h3>🌐 Хостинг 24/7</h3>
+                <p>Автоматическая публикация на GitHub Pages с полной защитой HTTPS.</p>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>© 2026 Simalee. Сгенерировано на C.</p>
+    </footer>
 </body>
 </html>
