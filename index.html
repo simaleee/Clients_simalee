@@ -3,105 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simalee Design | Личный кабинет</title>
+    <title>Simalee Design | Studio</title>
     <style>
-        :root {
-            --bg: #e6e9e9;
-            --text: #2d3748;
-            --shadow-light: #ffffff;
-            --shadow-dark: #c2c7c7;
-            --accent: #528a80;
-            --accent-light: #83b1a8;
-        }
+        :root { --bg: #e6e9e9; --text: #2d3748; --shadow-light: #ffffff; --shadow-dark: #c2c7c7; --accent: #528a80; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
         body { background: var(--bg); color: var(--text); min-height: 100vh; padding: 20px; display: flex; justify-content: center; align-items: center; }
         .container { width: 100%; max-width: 900px; }
-        /* Неоморфные элементы */
-        .neu-card {
-            background: var(--bg);
-            border-radius: 24px;
-            box-shadow: 10px 10px 20px var(--shadow-dark), -10px -10px 20px var(--shadow-light);
-            padding: 30px;
-            margin-bottom: 25px;
-        }
-        .neu-input {
-            width: 100%; border: none; padding: 15px 20px; border-radius: 16px;
-            background: var(--bg);
-            box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
-            color: var(--text); font-size: 16px; outline: none; margin-bottom: 15px;
-        }
-        .neu-btn {
-            border: none; padding: 15px 30px; border-radius: 16px; cursor: pointer;
-            background: var(--bg); color: var(--accent); font-weight: 600; font-size: 16px;
-            box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
-            transition: 0.2s;
-        }
-        .neu-btn:active {
-            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
-        }
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .logo { font-size: 28px; font-weight: 800; color: var(--accent); letter-spacing: 1px; }
-        .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px; }
-        .gallery-item { height: 180px; border-radius: 16px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .neu-card { background: var(--bg); border-radius: 24px; box-shadow: 10px 10px 20px var(--shadow-dark), -10px -10px 20px var(--shadow-light); padding: 30px; margin-bottom: 25px; }
+        .neu-input { width: 100%; border: none; padding: 15px 20px; border-radius: 16px; background: var(--bg); box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light); color: var(--text); font-size: 16px; outline: none; margin-bottom: 15px; }
+        .neu-btn { border: none; padding: 15px 25px; border-radius: 16px; cursor: pointer; background: var(--bg); color: var(--accent); font-weight: 600; font-size: 15px; box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light); transition: 0.2s; }
+        .neu-btn:active { box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light); }
         .hidden { display: none !important; }
-        .tag { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 12px; background: var(--accent); color: white; margin-bottom: 10px; }
+        .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
+        .gallery img { width: 100%; height: 160px; object-fit: cover; border-radius: 16px; box-shadow: 4px 4px 8px var(--shadow-dark); }
     </style>
 </head>
 <body>
     <div class="container">
-        <header class="neu-card" style="padding: 20px 30px;">
-            <div class="logo">Simalee Studio</div>
-            <div id="userStatus" style="font-size: 14px; color: var(--accent); font-weight: 600;">Вход не выполнен</div>
+        <header class="neu-card" style="display:flex; justify-between:space-between; align-items:center;">
+            <div style="font-size: 24px; font-weight: 800; color: var(--accent);">Simalee Studio</div>
+            <button onclick="switchRole()" class="neu-btn" id="roleBtn">Вход для Simalee</button>
         </header>
-        <div id="authSection" class="neu-card" style="text-align: center; max-width: 400px; margin: 0 auto;">
-            <h2 style="margin-bottom: 10px;">Личный кабинет</h2>
-            <p style="color: #718096; font-size: 14px; margin-bottom: 20px;">Введите ваш номер телефона для просмотра проекта</p>
-            <input type="tel" id="phoneInput" class="neu-input" placeholder="+7 (999) 000-00-00">
-            <button onclick="login()" class="neu-btn" style="width: 100%;">Войти в проект</button>
+        <div id="clientAuth" class="neu-card" style="text-align:center; max-width:400px; margin:0 auto;">
+            <h2>Вход для клиента</h2>
+            <p style="color:#718096; font-size:14px; margin: 10px 0 20px;">Введите номер телефона</p>
+            <input type="tel" id="clientPhone" class="neu-input" placeholder="+7 (999) 000-00-00">
+            <button onclick="openClientProject()" class="neu-btn" style="width:100%;">Открыть проект</button>
         </div>
-        <div id="projectSection" class="hidden">
-            <div class="neu-card">
-                <span class="tag">Проект в работе</span>
-                <h1 id="projectTitle" style="margin-bottom: 10px;">Дизайн интерьера квартиры</h1>
-                <p style="color: #718096;">Дизайнер: <strong>Simalee</strong></p>
-            </div>
-            <div class="neu-card">
-                <h3>Черновики & Визуализация</h3>
-                <div class="gallery">
-                    <div class="gallery-item" style="background: linear-gradient(135deg, #a8c0ff, #3f2b96);">3D Эскиз гостиной</div>
-                    <div class="gallery-item" style="background: linear-gradient(135deg, #fbc2eb, #a6c1ee);">Планировка / Чертежи</div>
-                    <div class="gallery-item" style="background: linear-gradient(135deg, #84fab0, #8fd3f4);">Фото ДО ремонта</div>
-                </div>
-            </div>
-            <div class="neu-card">
-                <h3 style="margin-bottom: 15px;">Связаться с Simalee</h3>
-                <p style="margin-bottom: 15px; color: #718096; font-size: 14px;">Есть вопросы или правки по чертежам? Напишите напрямую дизайнерy:</p>
-                <a href="mailto:designer@simalee.com" class="neu-btn" style="text-decoration: none; display: inline-block;">✉ Написать на почту</a>
-                <button onclick="logout()" class="neu-btn" style="margin-left: 10px; color: #e53e3e;">Выйти</button>
-            </div>
+        <div id="designerPanel" class="neu-card hidden">
+            <h2>Панель управления Simalee</h2>
+            <p style="color:#718096; margin-bottom:20px;">Добавление проекта для клиента</p>
+            <input type="text" id="newPhone" class="neu-input" placeholder="Телефон клиента (например: +79991112233)">
+            <input type="text" id="newTitle" class="neu-input" placeholder="Название проекта (например: Ремонт гостиной)">
+            <input type="text" id="newImg" class="neu-input" placeholder="Ссылка на фото/чертёж (URL)">
+            <input type="text" id="newVideo" class="neu-input" placeholder="Ссылка на видео (Google Диск / YouTube)">
+            <button onclick="saveProject()" class="neu-btn">Сохранить проект</button>
+        </div>
+        <div id="projectCard" class="neu-card hidden">
+            <h1 id="pTitle">Проект</h1>
+            <p style="color:#718096; margin: 10px 0 20px;">Дизайнер: <strong>Simalee</strong></p>
+            <h3>Материалы и чертежи:</h3>
+            <div id="pGallery" class="gallery"></div>
+            <div id="pVideo" style="margin-top:20px;"></div>
+            <br><button onclick="location.reload()" class="neu-btn">Выйти</button>
         </div>
     </div>
     <script>
-        function login() {
-            const phone = document.getElementById('phoneInput').value;
-            if (phone.trim().length > 5) {
-                localStorage.setItem('userPhone', phone);
-                showProject(phone);
-            } else { alert('Введите корректный номер телефона'); }
+        let isDesigner = false;
+        function switchRole() {
+            isDesigner = !isDesigner;
+            if(isDesigner) {
+                const pass = prompt('Введите пароль дизайнеров Simalee:');
+                if(pass === '1234') {
+                    document.getElementById('clientAuth').classList.add('hidden');
+                    document.getElementById('designerPanel').classList.remove('hidden');
+                    document.getElementById('roleBtn').innerText = 'Выйти из админки';
+                } else { alert('Неверный пароль'); isDesigner = false; }
+            } else { location.reload(); }
         }
-        function showProject(phone) {
-            document.getElementById('authSection').classList.add('hidden');
-            document.getElementById('projectSection').classList.remove('hidden');
-            document.getElementById('userStatus').innerText = 'Клиент: ' + phone;
-            document.getElementById('projectTitle').innerText = 'Проект интерьера (' + phone + ')';
+        function saveProject() {
+            const phone = document.getElementById('newPhone').value.trim();
+            const projectData = {
+                title: document.getElementById('newTitle').value,
+                img: document.getElementById('newImg').value,
+                video: document.getElementById('newVideo').value
+            };
+            localStorage.setItem('project_' + phone, JSON.stringify(projectData));
+            alert('Проект для ' + phone + ' сохранен!');
         }
-        function logout() {
-            localStorage.removeItem('userPhone');
-            location.reload();
-        }
-        window.onload = function() {
-            const savedPhone = localStorage.getItem('userPhone');
-            if (savedPhone) { showProject(savedPhone); }
+        function openClientProject() {
+            const phone = document.getElementById('clientPhone').value.trim();
+            const data = localStorage.getItem('project_' + phone);
+            if(data) {
+                const p = JSON.parse(data);
+                document.getElementById('clientAuth').classList.add('hidden');
+                document.getElementById('projectCard').classList.remove('hidden');
+                document.getElementById('pTitle').innerText = p.title;
+                if(p.img) document.getElementById('pGallery').innerHTML = '<img src="' + p.img + '">';
+                if(p.video) document.getElementById('pVideo').innerHTML = '<a href="' + p.video + '" target="_blank" class="neu-btn">🎬 Смотреть видео проекта</a>';
+            } else { alert('Проект для этого номера не найден!'); }
         }
     </script>
 </body>
