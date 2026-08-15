@@ -10,17 +10,21 @@
         body { background: var(--bg); color: var(--text); min-height: 100vh; padding: 20px; display: flex; justify-content: center; align-items: center; }
         .container { width: 100%; max-width: 900px; }
         .neu-card { background: var(--bg); border-radius: 24px; box-shadow: 10px 10px 20px var(--shadow-dark), -10px -10px 20px var(--shadow-light); padding: 30px; margin-bottom: 25px; }
-        .neu-input { width: 100%; border: none; padding: 15px 20px; border-radius: 16px; background: var(--bg); box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light); color: var(--text); font-size: 16px; outline: none; margin-bottom: 15px; }
-        .neu-btn { border: none; padding: 15px 25px; border-radius: 16px; cursor: pointer; background: var(--bg); color: var(--accent); font-weight: 600; font-size: 15px; box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light); transition: 0.2s; }
+        .neu-input { width: 100%; border: none; padding: 15px 20px; border-radius: 16px; background: var(--bg); box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light); color: var(--text); font-size: 15px; outline: none; margin-bottom: 15px; resize: vertical; }
+        .neu-btn { border: none; padding: 12px 20px; border-radius: 16px; cursor: pointer; background: var(--bg); color: var(--accent); font-weight: 600; font-size: 15px; box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light); transition: 0.2s; margin-right: 5px; margin-bottom: 10px; }
         .neu-btn:active { box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light); }
+        .btn-danger { color: #e53e3e; }
         .hidden { display: none !important; }
-        .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
-        .gallery img { width: 100%; height: 160px; object-fit: cover; border-radius: 16px; box-shadow: 4px 4px 8px var(--shadow-dark); }
+        .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-top: 15px; }
+        .gallery img { width: 100%; height: 180px; object-fit: cover; border-radius: 16px; box-shadow: 4px 4px 8px var(--shadow-dark); }
+        .project-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-radius: 16px; margin-bottom: 10px; box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light); }
+        .comment-box { background: var(--bg); padding: 20px; border-radius: 16px; box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light); line-height: 1.6; white-space: pre-line; margin-top: 10px; }
+        .video-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <header class="neu-card" style="display:flex; justify-between:space-between; align-items:center;">
+        <header class="neu-card" style="display:flex; justify-content:space-between; align-items:center;">
             <div style="font-size: 24px; font-weight: 800; color: var(--accent);">Simalee Studio</div>
             <button onclick="switchRole()" class="neu-btn" id="roleBtn">Вход для Simalee</button>
         </header>
@@ -32,19 +36,37 @@
         </div>
         <div id="designerPanel" class="neu-card hidden">
             <h2>Панель управления Simalee</h2>
-            <p style="color:#718096; margin-bottom:20px;">Добавление проекта для клиента</p>
+            <p style="color:#718096; margin-bottom:20px;">Создание / Редактирование проекта</p>
             <input type="text" id="newPhone" class="neu-input" placeholder="Телефон клиента (например: +79991112233)">
             <input type="text" id="newTitle" class="neu-input" placeholder="Название проекта (например: Ремонт гостиной)">
-            <input type="text" id="newImg" class="neu-input" placeholder="Ссылка на фото/чертёж (URL)">
-            <input type="text" id="newVideo" class="neu-input" placeholder="Ссылка на видео (Google Диск / YouTube)">
+            <textarea id="newComments" class="neu-input" rows="3" placeholder="Заметки / Комментарии дизайнера клиенту..."></textarea>
+            <textarea id="newImg" class="neu-input" rows="3" placeholder="Ссылки на фото/чертежи (по одной на строчку или через запятую)"></textarea>
+            <textarea id="newVideo" class="neu-input" rows="3" placeholder="Ссылки на видео/файлы (по одной на строчку или через запятую)"></textarea>
             <button onclick="saveProject()" class="neu-btn">Сохранить проект</button>
+            <button onclick="clearForm()" class="neu-btn">Очистить поля</button>
+            <hr style="margin: 25px 0; border: none; border-top: 1px solid var(--shadow-dark);">
+            <h3>Список всех проектов</h3>
+            <div id="projectsList" style="margin-top:15px;"></div>
         </div>
         <div id="projectCard" class="neu-card hidden">
             <h1 id="pTitle">Проект</h1>
-            <p style="color:#718096; margin: 10px 0 20px;">Дизайнер: <strong>Simalee</strong></p>
-            <h3>Материалы и чертежи:</h3>
-            <div id="pGallery" class="gallery"></div>
-            <div id="pVideo" style="margin-top:20px;"></div>
+            <p style="color:#718096; margin: 10px 0 15px;">Дизайнер: <strong>Simalee</strong></p>
+            
+            <div id="pCommentsBlock" class="hidden" style="margin-bottom: 20px;">
+                <h3>Заметки от дизайнера:</h3>
+                <div id="pComments" class="comment-box"></div>
+            </div>
+            
+            <div id="pGalleryBlock" class="hidden" style="margin-bottom: 20px;">
+                <h3>Фотографии и чертежи:</h3>
+                <div id="pGallery" class="gallery"></div>
+            </div>
+            
+            <div id="pVideoBlock" class="hidden" style="margin-bottom: 20px;">
+                <h3>Видео и внешние материалы:</h3>
+                <div id="pVideo" class="video-list"></div>
+            </div>
+            
             <br><button onclick="location.reload()" class="neu-btn">Выйти</button>
         </div>
     </div>
@@ -54,22 +76,64 @@
             isDesigner = !isDesigner;
             if(isDesigner) {
                 const pass = prompt('Введите пароль дизайнеров Simalee:');
-                if(pass === '1234') {
+                if(pass === '00221922') {
                     document.getElementById('clientAuth').classList.add('hidden');
                     document.getElementById('designerPanel').classList.remove('hidden');
                     document.getElementById('roleBtn').innerText = 'Выйти из админки';
+                    renderProjectsList();
                 } else { alert('Неверный пароль'); isDesigner = false; }
             } else { location.reload(); }
         }
         function saveProject() {
             const phone = document.getElementById('newPhone').value.trim();
+            if(!phone) { alert('Введите номер телефона клиента'); return; }
             const projectData = {
                 title: document.getElementById('newTitle').value,
+                comments: document.getElementById('newComments').value,
                 img: document.getElementById('newImg').value,
                 video: document.getElementById('newVideo').value
             };
             localStorage.setItem('project_' + phone, JSON.stringify(projectData));
-            alert('Проект для ' + phone + ' сохранен!');
+            alert('Проект для ' + phone + ' успешно сохранен!');
+            clearForm();
+            renderProjectsList();
+        }
+        function renderProjectsList() {
+            const list = document.getElementById('projectsList');
+            list.innerHTML = '';
+            let count = 0;
+            for(let i=0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if(key.startsWith('project_')) {
+                    count++;
+                    const phone = key.replace('project_', '');
+                    const p = JSON.parse(localStorage.getItem(key));
+                    list.innerHTML += '<div class="project-item"><div><strong>' + (p.title || 'Без названия') + '</strong> (' + phone + ')</div><div><button onclick="editProject(\'' + phone + '\')" class="neu-btn">Изменить</button><button onclick="deleteProject(\'' + phone + '\')" class="neu-btn btn-danger">Удалить</button></div></div>';
+                }
+            }
+            if(count === 0) list.innerHTML = '<p style="color:#718096;">Сохранённых проектов пока нет</p>';
+        }
+        function editProject(phone) {
+            const p = JSON.parse(localStorage.getItem('project_' + phone));
+            document.getElementById('newPhone').value = phone;
+            document.getElementById('newTitle').value = p.title || '';
+            document.getElementById('newComments').value = p.comments || '';
+            document.getElementById('newImg').value = p.img || '';
+            document.getElementById('newVideo').value = p.video || '';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        function deleteProject(phone) {
+            if(confirm('Удалить проект для клиента ' + phone + '?')) {
+                localStorage.removeItem('project_' + phone);
+                renderProjectsList();
+            }
+        }
+        function clearForm() {
+            document.getElementById('newPhone').value = '';
+            document.getElementById('newTitle').value = '';
+            document.getElementById('newComments').value = '';
+            document.getElementById('newImg').value = '';
+            document.getElementById('newVideo').value = '';
         }
         function openClientProject() {
             const phone = document.getElementById('clientPhone').value.trim();
@@ -78,9 +142,28 @@
                 const p = JSON.parse(data);
                 document.getElementById('clientAuth').classList.add('hidden');
                 document.getElementById('projectCard').classList.remove('hidden');
-                document.getElementById('pTitle').innerText = p.title;
-                if(p.img) document.getElementById('pGallery').innerHTML = '<img src="' + p.img + '">';
-                if(p.video) document.getElementById('pVideo').innerHTML = '<a href="' + p.video + '" target="_blank" class="neu-btn">🎬 Смотреть видео проекта</a>';
+                document.getElementById('pTitle').innerText = p.title || 'Ваш проект';
+                
+                if(p.comments && p.comments.trim()) {
+                    document.getElementById('pComments').innerText = p.comments;
+                    document.getElementById('pCommentsBlock').classList.remove('hidden');
+                }
+                
+                if(p.img && p.img.trim()) {
+                    const imgs = p.img.split(/[,\n]/).map(s => s.trim()).filter(Boolean);
+                    let html = '';
+                    imgs.forEach(url => { html += '<img src="' + url + '" alt="Чертеж/Фото">'; });
+                    document.getElementById('pGallery').innerHTML = html;
+                    document.getElementById('pGalleryBlock').classList.remove('hidden');
+                }
+                
+                if(p.video && p.video.trim()) {
+                    const vids = p.video.split(/[,\n]/).map(s => s.trim()).filter(Boolean);
+                    let html = '';
+                    vids.forEach((url, i) => { html += '<a href="' + url + '" target="_blank" class="neu-btn" style="display:inline-block; text-decoration:none;">🎬 Материал/Видео #' + (i+1) + '</a>'; });
+                    document.getElementById('pVideo').innerHTML = html;
+                    document.getElementById('pVideoBlock').classList.remove('hidden');
+                }
             } else { alert('Проект для этого номера не найден!'); }
         }
     </script>
