@@ -9,19 +9,25 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
         body { background: var(--bg); color: var(--text); min-height: 100vh; padding: 20px; display: flex; justify-content: center; align-items: center; background-image: radial-gradient(rgba(62, 92, 67, 0.05) 1px, transparent 0); background-size: 24px 24px; }
         .container { width: 100%; max-width: 900px; }
-        .neu-card { background: var(--bg); border-radius: 20px; box-shadow: 8px 8px 18px var(--shadow-dark), -8px -8px 18px var(--shadow-light); padding: 35px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.4); border-left: 4px solid var(--accent); position: relative; overflow: hidden; }
+        .neu-card { background: var(--bg); border-radius: 20px; box-shadow: 8px 8px 18px var(--shadow-dark), -8px -8px 18px var(--shadow-light); padding: 35px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.4); border-left: 4px solid var(--accent); position: relative; overflow: hidden; animation: cardAppear 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        @keyframes cardAppear { from { opacity: 0; transform: translateY(15px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
         .jp-watermark { position: absolute; right: 15px; bottom: 5px; font-size: 70px; font-weight: bold; color: rgba(62, 92, 67, 0.04); pointer-events: none; user-select: none; }
         .neu-input, .neu-select { width: 100%; border: none; padding: 15px 20px; border-radius: 12px; background: var(--bg); box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light); color: var(--text); font-size: 15px; outline: none; margin-bottom: 15px; resize: vertical; transition: all 0.3s ease; appearance: none; }
         .neu-input:focus, .neu-select:focus { box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light), 0 0 0 2px var(--accent-light); }
-        .neu-btn { border: none; padding: 12px 24px; border-radius: 12px; cursor: pointer; background: var(--bg); color: var(--accent); font-weight: 600; font-size: 15px; box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light); transition: all 0.2s ease; margin-right: 8px; margin-bottom: 10px; display: inline-flex; align-items: center; gap: 8px; }
-        .neu-btn:hover { color: var(--accent-light); transform: translateY(-1px); }
+        .neu-btn { border: none; padding: 12px 24px; border-radius: 12px; cursor: pointer; background: var(--bg); color: var(--accent); font-weight: 600; font-size: 15px; box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light); transition: all 0.25s ease; margin-right: 8px; margin-bottom: 10px; display: inline-flex; align-items: center; gap: 8px; }
+        .neu-btn:hover { color: var(--accent-light); transform: translateY(-2px); box-shadow: 7px 7px 14px var(--shadow-dark), -7px -7px 14px var(--shadow-light); }
         .neu-btn:active { box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light); transform: translateY(0); }
         .btn-danger { color: var(--danger); }
         .btn-danger:hover { color: #a34e36; }
         .hidden { display: none !important; }
-        .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-top: 15px; }
-        .gallery img { width: 100%; height: 180px; object-fit: cover; border-radius: 12px; box-shadow: 4px 4px 10px var(--shadow-dark); border: 2px solid var(--bg); transition: transform 0.3s ease; }
-        .gallery img:hover { transform: scale(1.02); }
+        #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: var(--bg); border-left: 5px solid var(--accent); color: var(--text); padding: 16px 30px; border-radius: 16px; box-shadow: 10px 10px 25px var(--shadow-dark), -10px -10px 25px var(--shadow-light); font-weight: 600; display: flex; align-items: center; gap: 12px; transition: top 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 9999; border: 1px solid rgba(255,255,255,0.6); }
+        #toast.show { top: 30px; }
+        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; margin-top: 15px; }
+        .gallery-item { position: relative; width: 100%; padding-top: 100%; border-radius: 12px; overflow: hidden; box-shadow: 4px 4px 8px var(--shadow-dark), -2px -2px 6px var(--shadow-light); background: var(--bg); border: 2px solid rgba(255,255,255,0.6); transition: all 0.3s ease; }
+        .gallery-item:hover { transform: translateY(-3px) scale(1.04); box-shadow: 6px 6px 12px var(--shadow-dark), -3px -3px 8px var(--shadow-light); }
+        .gallery-item img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+        .badge-update { background: var(--accent); color: white; font-size: 11px; padding: 3px 8px; border-radius: 20px; font-weight: bold; vertical-align: middle; margin-left: 8px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
         .project-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-radius: 12px; margin-bottom: 12px; box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light); background: rgba(255,255,255,0.2); }
         .project-icon { font-size: 22px; margin-right: 10px; vertical-align: middle; display: inline-block; }
         .comment-box { background: var(--bg); padding: 20px; border-radius: 12px; box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light); line-height: 1.7; white-space: pre-line; margin-top: 10px; border-left: 3px solid var(--accent-light); }
@@ -31,8 +37,9 @@
     </style>
 </head>
 <body>
+    <div id="toast"><span>🍃</span> <span id="toastMsg">Сохранение успешно!</span></div>
     <div class="container">
-        <header class="neu-card" style="display:flex; justify-content:space-between; align-items:center; border-left-color: var(--accent);">
+        <header class="neu-card" style="display:flex; justify-content:space-between; align-items:center;">
             <div>
                 <div style="font-size: 26px; font-weight: 800; color: var(--accent); display:flex; align-items:center; gap:8px;">
                     <span>Simalee Studio</span>
@@ -65,10 +72,10 @@
                 <option value="⛩️">⛩️ Японский сад / Чайный дом</option>
                 <option value="📐">📐 Архитектура / Чертеж</option>
             </select>
-            <input type="text" id="newTitle" class="neu-input" placeholder="Название проекта (например: Ремонт гостиной 侘寂)">
+            <input type="text" id="newTitle" class="neu-input" placeholder="Название проекта">
             <textarea id="newComments" class="neu-input" rows="3" placeholder="Заметки / Замысел дизайнера клиенту..."></textarea>
-            <textarea id="newImg" class="neu-input" rows="3" placeholder="Ссылки на фото/чертежи (по одной на строчку или через запятую)"></textarea>
-            <textarea id="newVideo" class="neu-input" rows="3" placeholder="Ссылки на видео/3D-туры (по одной на строчку или через запятую)"></textarea>
+            <textarea id="newImg" class="neu-input" rows="3" placeholder="Ссылки на фото (прямые ссылки или Яндекс.Диск)"></textarea>
+            <textarea id="newVideo" class="neu-input" rows="3" placeholder="Ссылки на видео / 3D-туры"></textarea>
             <button onclick="saveProject()" class="neu-btn">🎋 Сохранить проект</button>
             <button onclick="clearForm()" class="neu-btn">🍃 Очистить поля</button>
             <hr style="margin: 25px 0; border: none; border-top: 1px dashed var(--shadow-dark);">
@@ -86,12 +93,12 @@
             </div>
             
             <div id="pGalleryBlock" class="hidden" style="margin-bottom: 25px;">
-                <h3>Эскизы и чертежи <span class="jp-sub">[ 図面 ]</span></h3>
+                <h3>Эскизы и чертежи <span class="jp-sub">[ 図面 ]</span> <span id="newBadgeImg"></span></h3>
                 <div id="pGallery" class="gallery"></div>
             </div>
             
             <div id="pVideoBlock" class="hidden" style="margin-bottom: 25px;">
-                <h3>3D-туры и видео <span class="jp-sub">[ 映像 ]</span></h3>
+                <h3>3D-туры и видео <span class="jp-sub">[ 映像 ]</span> <span id="newBadgeVid"></span></h3>
                 <div id="pVideo" class="video-list"></div>
             </div>
             
@@ -99,14 +106,48 @@
         </div>
     </div>
     <script>
+        function playSound(type) {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                if (type === 'success') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+                    osc.frequency.exponentialRampToValueAtTime(783.99, ctx.currentTime + 0.25); // G5
+                    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+                    osc.start(); osc.stop(ctx.currentTime + 0.3);
+                } else {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(350, ctx.currentTime);
+                    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+                    osc.start(); osc.stop(ctx.currentTime + 0.08);
+                }
+            } catch(e) {}
+        }
+        function showToast(text) {
+            const t = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = text;
+            t.classList.add('show');
+            playSound('success');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+        function fixYandexUrl(url) {
+            if (url.includes('disk.yandex') || url.includes('yadi.sk')) {
+                return 'https://getfile.dokpub.com/yandex/get/' + encodeURIComponent(url);
+            }
+            return url;
+        }
         document.addEventListener('DOMContentLoaded', function() {
             checkSavedSession();
         });
-        
         function checkSavedSession() {
-            const savedAdmin = sessionStorage.getItem('simalee_admin');
-            const savedPhone = sessionStorage.getItem('simalee_client_phone');
-            
+            const savedAdmin = localStorage.getItem('simalee_admin_persist');
+            const savedPhone = localStorage.getItem('simalee_client_persist');
             if (savedAdmin === 'true') {
                 showAdminPanel();
             } else if (savedPhone) {
@@ -121,44 +162,50 @@
             renderProjectsList();
         }
         function switchRole() {
-            const isAdmin = sessionStorage.getItem('simalee_admin') === 'true';
+            playSound('click');
+            const isAdmin = localStorage.getItem('simalee_admin_persist') === 'true';
             if (!isAdmin) {
                 const pass = prompt('Введите пароль дизайнера Simalee:');
                 if(pass === '00221922') {
-                    sessionStorage.setItem('simalee_admin', 'true');
-                    sessionStorage.removeItem('simalee_client_phone');
+                    localStorage.setItem('simalee_admin_persist', 'true');
+                    localStorage.removeItem('simalee_client_persist');
                     showAdminPanel();
+                    showToast('Вход в админ-панель выполнен!');
                 } else if(pass !== null) {
-                    alert('Неверный пароль');
+                    showToast('Ошибка: неверный пароль');
                 }
             } else {
-                sessionStorage.removeItem('simalee_admin');
+                localStorage.removeItem('simalee_admin_persist');
                 location.reload();
             }
         }
         function loginClient() {
+            playSound('click');
             const phone = document.getElementById('clientPhone').value.trim();
-            if (!phone) { alert('Введите номер телефона'); return; }
+            if (!phone) { showToast('Введите номер телефона'); return; }
             if (openClientProject(phone)) {
-                sessionStorage.setItem('simalee_client_phone', phone);
+                localStorage.setItem('simalee_client_persist', phone);
+                showToast('Добро пожаловать!');
             }
         }
         function logoutClient() {
-            sessionStorage.removeItem('simalee_client_phone');
+            playSound('click');
+            localStorage.removeItem('simalee_client_persist');
             location.reload();
         }
         function saveProject() {
             const phone = document.getElementById('newPhone').value.trim();
-            if(!phone) { alert('Введите номер телефона клиента'); return; }
+            if(!phone) { showToast('Заполните номер телефона!'); return; }
             const projectData = {
                 icon: document.getElementById('newIcon').value,
                 title: document.getElementById('newTitle').value,
                 comments: document.getElementById('newComments').value,
                 img: document.getElementById('newImg').value,
-                video: document.getElementById('newVideo').value
+                video: document.getElementById('newVideo').value,
+                updatedAt: Date.now()
             };
             localStorage.setItem('project_' + phone, JSON.stringify(projectData));
-            alert('Проект для ' + phone + ' гармонично сохранен!');
+            showToast('Проект сохранят успешно!');
             clearForm();
             renderProjectsList();
         }
@@ -179,6 +226,7 @@
             if(count === 0) list.innerHTML = '<p style="color:#7a7a7a;">Сохранённых проектов пока нет</p>';
         }
         function editProject(phone) {
+            playSound('click');
             const p = JSON.parse(localStorage.getItem('project_' + phone));
             document.getElementById('newPhone').value = phone;
             document.getElementById('newIcon').value = p.icon || '🏡';
@@ -189,8 +237,10 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
         function deleteProject(phone) {
+            playSound('click');
             if(confirm('Удалить проект для клиента ' + phone + '?')) {
                 localStorage.removeItem('project_' + phone);
+                showToast('Проект удален');
                 renderProjectsList();
             }
         }
@@ -220,7 +270,10 @@
                 if(p.img && p.img.trim()) {
                     const imgs = p.img.split(/[,\n]/).map(s => s.trim()).filter(Boolean);
                     let html = '';
-                    imgs.forEach(url => { html += '<img src="' + url + '" alt="Чертеж/Фото">'; });
+                    imgs.forEach(url => {
+                        const directUrl = fixYandexUrl(url);
+                        html += '<a href="' + directUrl + '" target="_blank" class="gallery-item"><img src="' + directUrl + '" alt="Эскиз"></a>';
+                    });
                     document.getElementById('pGallery').innerHTML = html;
                     document.getElementById('pGalleryBlock').classList.remove('hidden');
                 } else { document.getElementById('pGalleryBlock').classList.add('hidden'); }
@@ -234,7 +287,7 @@
                 } else { document.getElementById('pVideoBlock').classList.add('hidden'); }
                 return true;
             } else {
-                alert('Проект для этого номера не найден!');
+                showToast('Проект для этого номера не найден!');
                 return false;
             }
         }
