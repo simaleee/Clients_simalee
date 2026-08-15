@@ -1,171 +1,321 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simalee Design | Studio</title>
-    <style>
-        :root { --bg: #e6e9e9; --text: #2d3748; --shadow-light: #ffffff; --shadow-dark: #c2c7c7; --accent: #528a80; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background: var(--bg); color: var(--text); min-height: 100vh; padding: 20px; display: flex; justify-content: center; align-items: center; }
-        .container { width: 100%; max-width: 900px; }
-        .neu-card { background: var(--bg); border-radius: 24px; box-shadow: 10px 10px 20px var(--shadow-dark), -10px -10px 20px var(--shadow-light); padding: 30px; margin-bottom: 25px; }
-        .neu-input { width: 100%; border: none; padding: 15px 20px; border-radius: 16px; background: var(--bg); box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light); color: var(--text); font-size: 15px; outline: none; margin-bottom: 15px; resize: vertical; }
-        .neu-btn { border: none; padding: 12px 20px; border-radius: 16px; cursor: pointer; background: var(--bg); color: var(--accent); font-weight: 600; font-size: 15px; box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light); transition: 0.2s; margin-right: 5px; margin-bottom: 10px; }
-        .neu-btn:active { box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light); }
-        .btn-danger { color: #e53e3e; }
-        .hidden { display: none !important; }
-        .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-top: 15px; }
-        .gallery img { width: 100%; height: 180px; object-fit: cover; border-radius: 16px; box-shadow: 4px 4px 8px var(--shadow-dark); }
-        .project-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-radius: 16px; margin-bottom: 10px; box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light); }
-        .comment-box { background: var(--bg); padding: 20px; border-radius: 16px; box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light); line-height: 1.6; white-space: pre-line; margin-top: 10px; }
-        .video-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <header class="neu-card" style="display:flex; justify-content:space-between; align-items:center;">
-            <div style="font-size: 24px; font-weight: 800; color: var(--accent);">Simalee Studio</div>
-            <button onclick="switchRole()" class="neu-btn" id="roleBtn">Вход для Simalee</button>
-        </header>
-        <div id="clientAuth" class="neu-card" style="text-align:center; max-width:400px; margin:0 auto;">
-            <h2>Вход для клиента</h2>
-            <p style="color:#718096; font-size:14px; margin: 10px 0 20px;">Введите номер телефона</p>
-            <input type="tel" id="clientPhone" class="neu-input" placeholder="+7 (999) 000-00-00">
-            <button onclick="openClientProject()" class="neu-btn" style="width:100%;">Открыть проект</button>
-        </div>
-        <div id="designerPanel" class="neu-card hidden">
-            <h2>Панель управления Simalee</h2>
-            <p style="color:#718096; margin-bottom:20px;">Создание / Редактирование проекта</p>
-            <input type="text" id="newPhone" class="neu-input" placeholder="Телефон клиента (например: +79991112233)">
-            <input type="text" id="newTitle" class="neu-input" placeholder="Название проекта (например: Ремонт гостиной)">
-            <textarea id="newComments" class="neu-input" rows="3" placeholder="Заметки / Комментарии дизайнера клиенту..."></textarea>
-            <textarea id="newImg" class="neu-input" rows="3" placeholder="Ссылки на фото/чертежи (по одной на строчку или через запятую)"></textarea>
-            <textarea id="newVideo" class="neu-input" rows="3" placeholder="Ссылки на видео/файлы (по одной на строчку или через запятую)"></textarea>
-            <button onclick="saveProject()" class="neu-btn">Сохранить проект</button>
-            <button onclick="clearForm()" class="neu-btn">Очистить поля</button>
-            <hr style="margin: 25px 0; border: none; border-top: 1px solid var(--shadow-dark);">
-            <h3>Список всех проектов</h3>
-            <div id="projectsList" style="margin-top:15px;"></div>
-        </div>
-        <div id="projectCard" class="neu-card hidden">
-            <h1 id="pTitle">Проект</h1>
-            <p style="color:#718096; margin: 10px 0 15px;">Дизайнер: <strong>Simalee</strong></p>
-            
-            <div id="pCommentsBlock" class="hidden" style="margin-bottom: 20px;">
-                <h3>Заметки от дизайнера:</h3>
-                <div id="pComments" class="comment-box"></div>
-            </div>
-            
-            <div id="pGalleryBlock" class="hidden" style="margin-bottom: 20px;">
-                <h3>Фотографии и чертежи:</h3>
-                <div id="pGallery" class="gallery"></div>
-            </div>
-            
-            <div id="pVideoBlock" class="hidden" style="margin-bottom: 20px;">
-                <h3>Видео и внешние материалы:</h3>
-                <div id="pVideo" class="video-list"></div>
-            </div>
-            
-            <br><button onclick="location.reload()" class="neu-btn">Выйти</button>
-        </div>
-    </div>
-    <script>
-        let isDesigner = false;
-        function switchRole() {
-            isDesigner = !isDesigner;
-            if(isDesigner) {
-                const pass = prompt('Введите пароль дизайнеров Simalee:');
-                if(pass === '00221922') {
-                    document.getElementById('clientAuth').classList.add('hidden');
-                    document.getElementById('designerPanel').classList.remove('hidden');
-                    document.getElementById('roleBtn').innerText = 'Выйти из админки';
-                    renderProjectsList();
-                } else { alert('Неверный пароль'); isDesigner = false; }
-            } else { location.reload(); }
-        }
-        function saveProject() {
-            const phone = document.getElementById('newPhone').value.trim();
-            if(!phone) { alert('Введите номер телефона клиента'); return; }
-            const projectData = {
-                title: document.getElementById('newTitle').value,
-                comments: document.getElementById('newComments').value,
-                img: document.getElementById('newImg').value,
-                video: document.getElementById('newVideo').value
-            };
-            localStorage.setItem('project_' + phone, JSON.stringify(projectData));
-            alert('Проект для ' + phone + ' успешно сохранен!');
-            clearForm();
-            renderProjectsList();
-        }
-        function renderProjectsList() {
-            const list = document.getElementById('projectsList');
-            list.innerHTML = '';
-            let count = 0;
-            for(let i=0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if(key.startsWith('project_')) {
-                    count++;
-                    const phone = key.replace('project_', '');
-                    const p = JSON.parse(localStorage.getItem(key));
-                    list.innerHTML += '<div class="project-item"><div><strong>' + (p.title || 'Без названия') + '</strong> (' + phone + ')</div><div><button onclick="editProject(\'' + phone + '\')" class="neu-btn">Изменить</button><button onclick="deleteProject(\'' + phone + '\')" class="neu-btn btn-danger">Удалить</button></div></div>';
-                }
-            }
-            if(count === 0) list.innerHTML = '<p style="color:#718096;">Сохранённых проектов пока нет</p>';
-        }
-        function editProject(phone) {
-            const p = JSON.parse(localStorage.getItem('project_' + phone));
-            document.getElementById('newPhone').value = phone;
-            document.getElementById('newTitle').value = p.title || '';
-            document.getElementById('newComments').value = p.comments || '';
-            document.getElementById('newImg').value = p.img || '';
-            document.getElementById('newVideo').value = p.video || '';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-        function deleteProject(phone) {
-            if(confirm('Удалить проект для клиента ' + phone + '?')) {
-                localStorage.removeItem('project_' + phone);
-                renderProjectsList();
-            }
-        }
-        function clearForm() {
-            document.getElementById('newPhone').value = '';
-            document.getElementById('newTitle').value = '';
-            document.getElementById('newComments').value = '';
-            document.getElementById('newImg').value = '';
-            document.getElementById('newVideo').value = '';
-        }
-        function openClientProject() {
-            const phone = document.getElementById('clientPhone').value.trim();
-            const data = localStorage.getItem('project_' + phone);
-            if(data) {
-                const p = JSON.parse(data);
-                document.getElementById('clientAuth').classList.add('hidden');
-                document.getElementById('projectCard').classList.remove('hidden');
-                document.getElementById('pTitle').innerText = p.title || 'Ваш проект';
-                
-                if(p.comments && p.comments.trim()) {
-                    document.getElementById('pComments').innerText = p.comments;
-                    document.getElementById('pCommentsBlock').classList.remove('hidden');
-                }
-                
-                if(p.img && p.img.trim()) {
-                    const imgs = p.img.split(/[,\n]/).map(s => s.trim()).filter(Boolean);
-                    let html = '';
-                    imgs.forEach(url => { html += '<img src="' + url + '" alt="Чертеж/Фото">'; });
-                    document.getElementById('pGallery').innerHTML = html;
-                    document.getElementById('pGalleryBlock').classList.remove('hidden');
-                }
-                
-                if(p.video && p.video.trim()) {
-                    const vids = p.video.split(/[,\n]/).map(s => s.trim()).filter(Boolean);
-                    let html = '';
-                    vids.forEach((url, i) => { html += '<a href="' + url + '" target="_blank" class="neu-btn" style="display:inline-block; text-decoration:none;">🎬 Материал/Видео #' + (i+1) + '</a>'; });
-                    document.getElementById('pVideo').innerHTML = html;
-                    document.getElementById('pVideoBlock').classList.remove('hidden');
-                }
-            } else { alert('Проект для этого номера не найден!'); }
-        }
-    </script>
-</body>
-</html>
+#include "pch.h"
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+    #include <stdlib.h>
+
+        int main(void) {
+        FILE* file = fopen("index.html", "w");
+        if (file == NULL) return 1;
+
+        fprintf(file, "<!DOCTYPE html>
+        \n
+        <html lang=\"ru\">
+        \n
+        <head>
+            \n");
+            fprintf(file, "
+            <meta charset=\"UTF-8\">\n");
+            fprintf(file, "
+            <meta name=\"viewport\" content=\"width =device-width, initial-scale=1.0\">\n");
+            fprintf(file, "
+            <title>Simalee Design | Studio 侘寂</title>\n");
+            fprintf(file, "
+            <style>
+                \n");
+                fprintf(file, "        :root { --bg: #f2efe9; --text: #2b2b2b; --shadow-light: #ffffff; --shadow-dark: #d5d1c8; --accent: #3e5c43; --accent-light: #6b8e73; --danger: #c86d51; }\n");
+                fprintf(file, "        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }\n");
+                fprintf(file, "        body { background: var(--bg); color: var(--text); min-height: 100vh; padding: 20px; display: flex; justify-content: center; align-items: center; background-image: radial-gradient(rgba(62, 92, 67, 0.05) 1px, transparent 0); background-size: 24px 24px; }\n");
+                fprintf(file, "        .container { width: 100%%; max-width: 900px; }\n");
+                fprintf(file, "        .neu-card { background: var(--bg); border-radius: 20px; box-shadow: 8px 8px 18px var(--shadow-dark), -8px -8px 18px var(--shadow-light); padding: 35px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.4); border-left: 4px solid var(--accent); position: relative; overflow: hidden; }\n");
+                fprintf(file, "        .jp-watermark { position: absolute; right: 15px; bottom: 5px; font-size: 70px; font-weight: bold; color: rgba(62, 92, 67, 0.04); pointer-events: none; user-select: none; }\n");
+                fprintf(file, "        .neu-input, .neu-select { width: 100%%; border: none; padding: 15px 20px; border-radius: 12px; background: var(--bg); box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light); color: var(--text); font-size: 15px; outline: none; margin-bottom: 15px; resize: vertical; transition: all 0.3s ease; appearance: none; }\n");
+                fprintf(file, "        .neu-input:focus, .neu-select:focus { box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light), 0 0 0 2px var(--accent-light); }\n");
+                fprintf(file, "        .neu-btn { border: none; padding: 12px 24px; border-radius: 12px; cursor: pointer; background: var(--bg); color: var(--accent); font-weight: 600; font-size: 15px; box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light); transition: all 0.2s ease; margin-right: 8px; margin-bottom: 10px; display: inline-flex; align-items: center; gap: 8px; }\n");
+                fprintf(file, "        .neu-btn:hover { color: var(--accent-light); transform: translateY(-1px); }\n");
+                fprintf(file, "        .neu-btn:active { box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light); transform: translateY(0); }\n");
+                fprintf(file, "        .btn-danger { color: var(--danger); }\n");
+                fprintf(file, "        .btn-danger:hover { color: #a34e36; }\n");
+                fprintf(file, "        .hidden { display: none !important; }\n");
+                fprintf(file, "        .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-top: 15px; }\n");
+                fprintf(file, "        .gallery img { width: 100%%; height: 180px; object-fit: cover; border-radius: 12px; box-shadow: 4px 4px 10px var(--shadow-dark); border: 2px solid var(--bg); transition: transform 0.3s ease; }\n");
+                fprintf(file, "        .gallery img:hover { transform: scale(1.02); }\n");
+                fprintf(file, "        .project-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-radius: 12px; margin-bottom: 12px; box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light); background: rgba(255,255,255,0.2); }\n");
+                fprintf(file, "        .project-icon { font-size: 22px; margin-right: 10px; vertical-align: middle; display: inline-block; }\n");
+                fprintf(file, "        .comment-box { background: var(--bg); padding: 20px; border-radius: 12px; box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light); line-height: 1.7; white-space: pre-line; margin-top: 10px; border-left: 3px solid var(--accent-light); }\n");
+                fprintf(file, "        .video-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }\n");
+                fprintf(file, "        h1, h2, h3 { letter-spacing: 0.5px; }\n");
+                fprintf(file, "        .jp-sub { font-size: 12px; color: var(--accent); opacity: 0.8; font-weight: normal; margin-left: 6px; letter-spacing: 1px; }\n");
+                fprintf(file, "
+            </style>\n
+        </head>\n
+        <body>
+            \n");
+
+            fprintf(file, "    <div class=\"container\">
+                \n");
+                fprintf(file, "        <header class=\"neu-card\" style=\"display:flex; justify-content:space-between; align-items:center; border-left-color: var(--accent);\">
+                    \n");
+                    fprintf(file, "            <div>
+                        \n");
+                        fprintf(file, "                <div style=\"font-size: 26px; font-weight: 800; color: var(--accent); display:flex; align-items:center; gap:8px;\">
+                            \n");
+                            fprintf(file, "                    <span>Simalee Studio</span>\n");
+                            fprintf(file, "                    <span style=\"font-size:16px; opacity:0.6;\">デザイン</span>\n");
+                            fprintf(file, "
+                        </div>\n");
+                        fprintf(file, "                <div style=\"font-size: 11px; color: #7a7a7a; margin-top:2px; letter-spacing:2px;\">WABI-SABI INTERIOR & DESIGN</div>\n");
+                        fprintf(file, "
+                    </div>\n");
+                    fprintf(file, "            <button onclick=\"switchRole()\" class=\"neu-btn\" id=\"roleBtn\">⛩️ Вход для Simalee</button>\n");
+                    fprintf(file, "
+                </header>\n");
+
+                // Форма входа для клиента
+                fprintf(file, "        <div id=\"clientAuth\" class=\"neu-card\" style=\"text-align:center; max-width:420px; margin:0 auto;\">
+                    \n");
+                    fprintf(file, "            <div class=\"jp-watermark\">空間</div>\n");
+                    fprintf(file, "            <h2>Вход в пространство <span class=\"jp-sub\">[ 空間 ]</span></h2>\n");
+                    fprintf(file, "            <p style=\"color:#7a7a7a; font-size:14px; margin: 10px 0 20px;\">Введите номер телефона для просмотра проекта</p>\n");
+                    fprintf(file, "            <input type=\"tel\" id=\"clientPhone\" class=\"neu-input\" placeholder=\"+7 (999) 000-00-00\" style=\"text-align:center;\">\n");
+                    fprintf(file, "            <button onclick=\"loginClient()\" class=\"neu-btn\" style=\"width:100%%; justify-content:center;\">🌸 Открыть проект</button>\n");
+                    fprintf(file, "
+                </div>\n");
+
+                // Панель Дизайнера Simalee
+                fprintf(file, "        <div id=\"designerPanel\" class=\"neu-card hidden\">
+                    \n");
+                    fprintf(file, "            <div class=\"jp-watermark\">創造</div>\n");
+                    fprintf(file, "            <h2>Панель управления <span class=\"jp-sub\">[ 創造 - Творчество ]</span></h2>\n");
+                    fprintf(file, "            <p style=\"color:#7a7a7a; margin-bottom:20px;\">Мастерская гармонии и проектов Simalee</p>\n");
+                    fprintf(file, "            <input type=\"text\" id=\"newPhone\" class=\"neu-input\" placeholder=\"Телефон клиента (например: +79991112233)\">\n");
+
+                    // Поле выбора иконки
+                    fprintf(file, "            <select id=\"newIcon\" class=\"neu-select\">
+                        \n");
+                        fprintf(file, "
+                        <option value=\"🏡\">🏡 Частный дом / Коттедж</option>\n");
+                        fprintf(file, "
+                        <option value=\"🛋️\">🛋️ Гостиная / Квартира</option>\n");
+                        fprintf(file, "
+                        <option value=\"🍳\">🍳 Кухня / Столовая</option>\n");
+                        fprintf(file, "
+                        <option value=\"🛏️\">🛏️ Спальня / Комната</option>\n");
+                        fprintf(file, "
+                        <option value=\"🛁\">🛁 Ванная комната / Санузел</option>\n");
+                        fprintf(file, "
+                        <option value=\"🪴\">🪴 Ландшафт / Двор / Балкон</option>\n");
+                        fprintf(file, "
+                        <option value=\"🏢\">🏢 Офис / Коммерция</option>\n");
+                        fprintf(file, "
+                        <option value=\"⛩️\">⛩️ Японский сад / Чайный дом</option>\n");
+                        fprintf(file, "
+                        <option value=\"📐\">📐 Архитектура / Чертеж</option>\n");
+                        fprintf(file, "
+                    </select>\n");
+
+                    fprintf(file, "            <input type=\"text\" id=\"newTitle\" class=\"neu-input\" placeholder=\"Название проекта (например: Ремонт гостиной 侘寂)\">\n");
+                    fprintf(file, "            <textarea id=\"newComments\" class=\"neu-input\" rows=\"3\" placeholder=\"Заметки / Замысел дизайнера клиенту...\"></textarea>\n");
+                    fprintf(file, "            <textarea id=\"newImg\" class=\"neu-input\" rows=\"3\" placeholder=\"Ссылки на фото /чертежи (по одной на строчку или через запятую)\"></textarea>\n");
+                    fprintf(file, "            <textarea id=\"newVideo\" class=\"neu-input\" rows=\"3\" placeholder=\"Ссылки на видео /3D-туры (по одной на строчку или через запятую)\"></textarea>\n");
+                    fprintf(file, "            <button onclick=\"saveProject()\" class=\"neu-btn\">🎋 Сохранить проект</button>\n");
+                    fprintf(file, "            <button onclick=\"clearForm()\" class=\"neu-btn\">🍃 Очистить поля</button>\n");
+                    fprintf(file, "            <hr style=\"margin: 25px 0; border: none; border-top: 1px dashed var(--shadow-dark);\">\n");
+                    fprintf(file, "            <h3>Список всех проектов <span class=\"jp-sub\">[ 一覧 ]</span></h3>\n");
+                    fprintf(file, "            <div id=\"projectsList\" style=\"margin-top:15px;\"></div>\n");
+                    fprintf(file, "
+                </div>\n");
+
+                // Просмотр проекта клиентом
+                fprintf(file, "        <div id=\"projectCard\" class=\"neu-card hidden\">
+                    \n");
+                    fprintf(file, "            <div class=\"jp-watermark\">調和</div>\n");
+                    fprintf(file, "            <h1 id=\"pTitle\" style=\"display:flex; align-items:center; gap:10px;\">Проект</h1>\n");
+                    fprintf(file, "            <p style=\"color:#7a7a7a; margin: 8px 0 20px;\">Авторы концепции: <strong>Simalee Studio 蓮</strong></p>\n");
+                    fprintf(file, "            \n");
+                    fprintf(file, "            <div id=\"pCommentsBlock\" class=\"hidden\" style=\"margin-bottom: 25px;\">
+                        \n");
+                        fprintf(file, "                <h3>Заметки мастера <span class=\"jp-sub\">[ 助言 ]</span></h3>\n");
+                        fprintf(file, "                <div id=\"pComments\" class=\"comment-box\"></div>\n");
+                        fprintf(file, "
+                    </div>\n");
+                    fprintf(file, "            \n");
+                    fprintf(file, "            <div id=\"pGalleryBlock\" class=\"hidden\" style=\"margin-bottom: 25px;\">
+                        \n");
+                        fprintf(file, "                <h3>Эскизы и чертежи <span class=\"jp-sub\">[ 図面 ]</span></h3>\n");
+                        fprintf(file, "                <div id=\"pGallery\" class=\"gallery\"></div>\n");
+                        fprintf(file, "
+                    </div>\n");
+                    fprintf(file, "            \n");
+                    fprintf(file, "            <div id=\"pVideoBlock\" class=\"hidden\" style=\"margin-bottom: 25px;\">
+                        \n");
+                        fprintf(file, "                <h3>3D-туры и видео <span class=\"jp-sub\">[ 映像 ]</span></h3>\n");
+                        fprintf(file, "                <div id=\"pVideo\" class=\"video-list\"></div>\n");
+                        fprintf(file, "
+                    </div>\n");
+                    fprintf(file, "            \n");
+                    fprintf(file, "            <br><button onclick=\"logoutClient()\" class=\"neu-btn btn-danger\">🚪 Выйти из проекта</button>\n");
+                    fprintf(file, "
+                </div>\n");
+                fprintf(file, "
+            </div>\n");
+
+            // JS-логика с поддержкой сессии и иконок
+            fprintf(file, "
+            <script>
+\n");
+                fprintf(file, "        document.addEventListener('DOMContentLoaded', function() {\n");
+                fprintf(file, "            checkSavedSession();\n");
+                fprintf(file, "        });\n");
+                fprintf(file, "        \n");
+                fprintf(file, "        function checkSavedSession() {\n");
+                fprintf(file, "            const savedAdmin = sessionStorage.getItem('simalee_admin');\n");
+                fprintf(file, "            const savedPhone = sessionStorage.getItem('simalee_client_phone');\n");
+                fprintf(file, "            \n");
+                fprintf(file, "            if (savedAdmin === 'true') {\n");
+                fprintf(file, "                showAdminPanel();\n");
+                fprintf(file, "            } else if (savedPhone) {\n");
+                fprintf(file, "                openClientProject(savedPhone);\n");
+                fprintf(file, "            }\n");
+                fprintf(file, "        }\n");
+
+                fprintf(file, "        function showAdminPanel() {\n");
+                fprintf(file, "            document.getElementById('clientAuth').classList.add('hidden');\n");
+                fprintf(file, "            document.getElementById('projectCard').classList.add('hidden');\n");
+                fprintf(file, "            document.getElementById('designerPanel').classList.remove('hidden');\n");
+                fprintf(file, "            document.getElementById('roleBtn').innerHTML = '🚪 Выйти из админки';\n");
+                fprintf(file, "            renderProjectsList();\n");
+                fprintf(file, "        }\n");
+
+                fprintf(file, "        function switchRole() {\n");
+                fprintf(file, "            const isAdmin = sessionStorage.getItem('simalee_admin') === 'true';\n");
+                fprintf(file, "            if (!isAdmin) {\n");
+                fprintf(file, "                const pass = prompt('Введите пароль дизайнера Simalee:');\n");
+                fprintf(file, "                if(pass === '00221922') {\n");
+                fprintf(file, "                    sessionStorage.setItem('simalee_admin', 'true');\n");
+                fprintf(file, "                    sessionStorage.removeItem('simalee_client_phone');\n");
+                fprintf(file, "                    showAdminPanel();\n");
+                fprintf(file, "                } else if(pass !== null) {\n");
+                fprintf(file, "                    alert('Неверный пароль');\n");
+                fprintf(file, "                }\n");
+                fprintf(file, "            } else {\n");
+                fprintf(file, "                sessionStorage.removeItem('simalee_admin');\n");
+                fprintf(file, "                location.reload();\n");
+                fprintf(file, "            }\n");
+                fprintf(file, "        }\n");
+
+                fprintf(file, "        function loginClient() {\n");
+                fprintf(file, "            const phone = document.getElementById('clientPhone').value.trim();\n");
+                fprintf(file, "            if (!phone) { alert('Введите номер телефона'); return; }\n");
+                fprintf(file, "            if (openClientProject(phone)) {\n");
+                fprintf(file, "                sessionStorage.setItem('simalee_client_phone', phone);\n");
+                fprintf(file, "            }\n");
+                fprintf(file, "        }\n");
+
+                fprintf(file, "        function logoutClient() {\n");
+                fprintf(file, "            sessionStorage.removeItem('simalee_client_phone');\n");
+                fprintf(file, "            location.reload();\n");
+                fprintf(file, "        }\n");
+
+                fprintf(file, "        function saveProject() {\n");
+                fprintf(file, "            const phone = document.getElementById('newPhone').value.trim();\n");
+                fprintf(file, "            if(!phone) { alert('Введите номер телефона клиента'); return; }\n");
+                fprintf(file, "            const projectData = {\n");
+                fprintf(file, "                icon: document.getElementById('newIcon').value,\n");
+                fprintf(file, "                title: document.getElementById('newTitle').value,\n");
+                fprintf(file, "                comments: document.getElementById('newComments').value,\n");
+                fprintf(file, "                img: document.getElementById('newImg').value,\n");
+                fprintf(file, "                video: document.getElementById('newVideo').value\n");
+                fprintf(file, "            };\n");
+                fprintf(file, "            localStorage.setItem('project_' + phone, JSON.stringify(projectData));\n");
+                fprintf(file, "            alert('Проект для ' + phone + ' гармонично сохранен!');\n");
+                fprintf(file, "            clearForm();\n");
+                fprintf(file, "            renderProjectsList();\n");
+                fprintf(file, "        }\n");
+
+                fprintf(file, "        function renderProjectsList() {\n");
+                fprintf(file, "            const list = document.getElementById('projectsList');\n");
+                fprintf(file, "            list.innerHTML = '';\n");
+                fprintf(file, "            let count = 0;\n");
+                fprintf(file, "            for(let i=0; i < localStorage.length; i++) {\n");
+                fprintf(file, "                const key = localStorage.key(i);\n");
+                fprintf(file, "                if(key.startsWith('project_')) {\n");
+                fprintf(file, "                    count++;\n");
+                fprintf(file, "                    const phone = key.replace('project_', '');\n");
+                fprintf(file, "                    const p = JSON.parse(localStorage.getItem(key));\n");
+                fprintf(file, "                    const icon = p.icon || '🏡';\n");
+                fprintf(file, "                    list.innerHTML += '<div class=\"project-item\"><div><span class=\"project-icon\">' + icon + '</span><strong>' + (p.title || 'Без названия') + '</strong> <span style=\"opacity:0.7;\">(' + phone + ')</span></div><div><button onclick=\"editProject(\\'' + phone + '\\')\" class=\"neu-btn\">✏️ Изменить</button><button onclick=\"deleteProject(\\'' + phone + '\\')\" class=\"neu-btn btn-danger\">🗑️ Удалить</button></div></div>';\n");
+                fprintf(file, "                }\n");
+                fprintf(file, "            }\n");
+                fprintf(file, "            if(count === 0) list.innerHTML = '<p style=\"color:#7a7a7a;\">Сохранённых проектов пока нет</p>';\n");
+                fprintf(file, "        }\n");
+
+                fprintf(file, "        function editProject(phone) {\n");
+                fprintf(file, "            const p = JSON.parse(localStorage.getItem('project_' + phone));\n");
+                fprintf(file, "            document.getElementById('newPhone').value = phone;\n");
+                fprintf(file, "            document.getElementById('newIcon').value = p.icon || '🏡';\n");
+                fprintf(file, "            document.getElementById('newTitle').value = p.title || '';\n");
+                fprintf(file, "            document.getElementById('newComments').value = p.comments || '';\n");
+                fprintf(file, "            document.getElementById('newImg').value = p.img || '';\n");
+                fprintf(file, "            document.getElementById('newVideo').value = p.video || '';\n");
+                fprintf(file, "            window.scrollTo({ top: 0, behavior: 'smooth' });\n");
+                fprintf(file, "        }\n");
+
+                fprintf(file, "        function deleteProject(phone) {\n");
+                fprintf(file, "            if(confirm('Удалить проект для клиента ' + phone + '?')) {\n");
+                fprintf(file, "                localStorage.removeItem('project_' + phone);\n");
+                fprintf(file, "                renderProjectsList();\n");
+                fprintf(file, "            }\n");
+                fprintf(file, "        }\n");
+
+                fprintf(file, "        function clearForm() {\n");
+                fprintf(file, "            document.getElementById('newPhone').value = '';\n");
+                fprintf(file, "            document.getElementById('newIcon').selectedIndex = 0;\n");
+                fprintf(file, "            document.getElementById('newTitle').value = '';\n");
+                fprintf(file, "            document.getElementById('newComments').value = '';\n");
+                fprintf(file, "            document.getElementById('newImg').value = '';\n");
+                fprintf(file, "            document.getElementById('newVideo').value = '';\n");
+                fprintf(file, "        }\n");
+
+                fprintf(file, "        function openClientProject(phone) {\n");
+                fprintf(file, "            const data = localStorage.getItem('project_' + phone);\n");
+                fprintf(file, "            if(data) {\n");
+                fprintf(file, "                const p = JSON.parse(data);\n");
+                fprintf(file, "                const icon = p.icon || '🏡';\n");
+                fprintf(file, "                document.getElementById('clientAuth').classList.add('hidden');\n");
+                fprintf(file, "                document.getElementById('designerPanel').classList.add('hidden');\n");
+                fprintf(file, "                document.getElementById('projectCard').classList.remove('hidden');\n");
+                fprintf(file, "                document.getElementById('pTitle').innerHTML = '<span>' + icon + '</span> <span>' + (p.title || 'Ваш проект') + '</span>';\n");
+                fprintf(file, "                \n");
+                fprintf(file, "                if(p.comments && p.comments.trim()) {\n");
+                fprintf(file, "                    document.getElementById('pComments').innerText = p.comments;\n");
+                fprintf(file, "                    document.getElementById('pCommentsBlock').classList.remove('hidden');\n");
+                fprintf(file, "                } else { document.getElementById('pCommentsBlock').classList.add('hidden'); }\n");
+                fprintf(file, "                \n");
+                fprintf(file, "                if(p.img && p.img.trim()) {\n");
+                fprintf(file, "                    const imgs = p.img.split(/[,\\n]/).map(s => s.trim()).filter(Boolean);\n");
+                fprintf(file, "                    let html = '';\n");
+                fprintf(file, "                    imgs.forEach(url => { html += '<img src=\"' + url + '\" alt=\"Чертеж/Фото\">'; });\n");
+                fprintf(file, "                    document.getElementById('pGallery').innerHTML = html;\n");
+                fprintf(file, "                    document.getElementById('pGalleryBlock').classList.remove('hidden');\n");
+                fprintf(file, "                } else { document.getElementById('pGalleryBlock').classList.add('hidden'); }\n");
+                fprintf(file, "                \n");
+                fprintf(file, "                if(p.video && p.video.trim()) {\n");
+                fprintf(file, "                    const vids = p.video.split(/[,\\n]/).map(s => s.trim()).filter(Boolean);\n");
+                fprintf(file, "                    let html = '';\n");
+                fprintf(file, "                    vids.forEach((url, i) => { html += '<a href=\"' + url + '\" target=\"_blank\" class=\"neu-btn\" style=\"display:inline-block; text-decoration:none;\">🎬 Видеоматериал #' + (i+1) + '</a>'; });\n");
+                fprintf(file, "                    document.getElementById('pVideo').innerHTML = html;\n");
+                fprintf(file, "                    document.getElementById('pVideoBlock').classList.remove('hidden');\n");
+                fprintf(file, "                } else { document.getElementById('pVideoBlock').classList.add('hidden'); }\n");
+                fprintf(file, "                return true;\n");
+                fprintf(file, "            } else {\n");
+                fprintf(file, "                alert('Проект для этого номера не найден!');\n");
+                fprintf(file, "                return false;\n");
+                fprintf(file, "            }\n");
+                fprintf(file, "        }\n");
+                fprintf(file, "    </script>\n
+        </body>\n
+    </html>\n");
+
+    fclose(file);
+    return 0;
+    }
