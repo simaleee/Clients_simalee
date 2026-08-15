@@ -19,11 +19,16 @@
         .neu-btn:active { box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light); transform: translateY(0); }
         .btn-danger { color: var(--danger); }
         .hidden { display: none !important; }
-        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-top: 15px; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 1000; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal-content { width: 90%; max-width: 500px; text-align: center; border-left: none !important; }
+        #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: var(--bg); border-left: 5px solid var(--accent); color: var(--text); padding: 16px 30px; border-radius: 16px; box-shadow: 10px 10px 25px var(--shadow-dark), -10px -10px 25px var(--shadow-light); font-weight: 600; display: flex; align-items: center; gap: 12px; transition: top 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 9999; border: 1px solid rgba(255,255,255,0.6); }
+        #toast.show { top: 30px; }
+        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; margin-top: 15px; }
         .gallery-item { position: relative; width: 100%; padding-top: 100%; border-radius: 14px; overflow: hidden; box-shadow: 4px 4px 10px var(--shadow-dark), -4px -4px 10px var(--shadow-light); background: var(--bg); border: 2px solid rgba(255,255,255,0.6); display: block; transition: all 0.3s ease; text-decoration: none; color: var(--text); }
-        .gallery-item:hover { transform: translateY(-3px) scale(1.02); box-shadow: 7px 7px 15px var(--shadow-dark), -5px -5px 12px var(--shadow-light); }
-        .gallery-item img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 12px; z-index: 2; transition: opacity 0.3s ease; }
-        .gallery-placeholder { position: absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px; text-align:center; font-size:12px; font-weight:600; color:var(--accent); z-index: 1; }
+        .gallery-item:hover { transform: translateY(-3px) scale(1.03); box-shadow: 7px 7px 15px var(--shadow-dark), -5px -5px 12px var(--shadow-light); }
+        .gallery-item img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 12px; z-index: 2; opacity: 0; transition: opacity 0.3s ease; }
+        .gallery-placeholder { position: absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px; text-align:center; font-size:13px; font-weight:600; color:var(--accent); z-index: 1; gap:6px; }
         .chat-box { background: var(--bg); padding: 20px; border-radius: 16px; box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light); margin-top: 15px; max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; text-align: left; }
         .chat-msg { padding: 10px 15px; border-radius: 12px; max-width: 80%; font-size: 14px; line-height: 1.4; word-break: break-word; }
         .msg-client { background: var(--accent); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
@@ -37,59 +42,411 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div id="projectCard" class="neu-card">
-            <h1 id="pTitle">Проект</h1>
-            <div id="pCommentsBlock" style="margin-top:20px;">
-                <h3>Заметки мастера <span class="jp-sub">[ 助言 ]</span></h3>
-                <div id="pComments" class="comment-box">Тестовая заметка</div>
-            </div>
-            <div id="pGalleryBlock" style="margin-top:25px;">
-                <h3>Эскизы и чертежи <span class="jp-sub">[ 図面 ]</span></h3>
-                <div id="pGallery" class="gallery"></div>
+    <div id="toast"><span>🍃</span> <span id="toastMsg">Сообщение</span></div>
+    <div id="passModal" class="modal-overlay hidden">
+        <div class="neu-card modal-content">
+            <div class="jp-watermark">鍵</div>
+            <h3>Доступ для Simalee <span class="jp-sub">[ 認証 ]</span></h3>
+            <p style="color:#7a7a7a; font-size:13px; margin: 10px 0 15px;">Введите пароль администратора</p>
+            <input type="password" id="adminPassInput" class="neu-input" placeholder="••••••••" style="text-align:center;">
+            <div style="display:flex; justify-content:center; gap:10px;">
+                <button onclick="submitAdminPass()" class="neu-btn">🌸 Войти</button>
+                <button onclick="closePassModal()" class="neu-btn btn-danger">Отмена</button>
             </div>
         </div>
     </div>
+    <div id="adminChatModal" class="modal-overlay hidden">
+        <div class="neu-card modal-content" style="max-width:550px; text-align:left;">
+            <div class="jp-watermark">対話</div>
+            <h3 id="adminChatTitle">Чат с клиентом</h3>
+            <p id="adminChatSub" style="color:#7a7a7a; font-size:13px; margin-bottom:10px;"></p>
+            <div id="adminChatBox" class="chat-box"></div>
+            <div style="display:flex; gap:10px; margin-top:15px;">
+                <input type="text" id="adminChatInput" class="neu-input" placeholder="Ваш ответ клиенту..." style="margin-bottom:0;">
+                <button onclick="sendAdminReply()" class="neu-btn" style="margin-bottom:0;">💬 Ответить</button>
+            </div>
+            <div style="text-align:right; margin-top:15px;">
+                <button onclick="closeAdminChat()" class="neu-btn btn-danger" style="margin-bottom:0;">Закрыть</button>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <header class="neu-card" style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <div style="font-size: 26px; font-weight: 800; color: var(--accent); display:flex; align-items:center; gap:8px;">
+                    <span>Simalee Studio</span>
+                    <span style="font-size:16px; opacity:0.6;">デザイン</span>
+                </div>
+                <div style="font-size: 11px; color: #7a7a7a; margin-top:2px; letter-spacing:2px;">WABI-SABI INTERIOR & DESIGN</div>
+            </div>
+            <button onclick="switchRole()" class="neu-btn" id="roleBtn">⛩️ Вход для Simalee</button>
+        </header>
+        <div id="clientAuth" class="neu-card" style="text-align:center; max-width:420px; margin:0 auto;">
+            <div class="jp-watermark">空間</div>
+            <h2>Вход в пространство <span class="jp-sub">[ 空間 ]</span></h2>
+            <p style="color:#7a7a7a; font-size:14px; margin: 10px 0 20px;">Введите номер телефона для просмотра проекта</p>
+            <input type="tel" id="clientPhone" class="neu-input" placeholder="+7 (999) 000-00-00" style="text-align:center;">
+            <button onclick="loginClient()" class="neu-btn" style="width:100%; justify-content:center;">🌸 Открыть проект</button>
+        </div>
+        <div id="designerPanel" class="neu-card hidden">
+            <div class="jp-watermark">創造</div>
+            <h2>Панель управления <span class="jp-sub">[ 創造 - Творчество ]</span></h2>
+            <p style="color:#7a7a7a; margin-bottom:20px;">Мастерская гармонии и проектов Simalee</p>
+            <input type="text" id="newPhone" class="neu-input" placeholder="Телефон клиента (например: +79991112233)">
+            <select id="newIcon" class="neu-select">
+                <option value="🏡">🏡 Частный дом / Коттедж</option>
+                <option value="🛋️">🛋️ Гостиная / Квартира</option>
+                <option value="🍳">🍳 Кухня / Столовая</option>
+                <option value="🛏️">🛏️ Спальня / Комната</option>
+                <option value="🛁">🛁 Ванная комната / Санузел</option>
+                <option value="🪴">🪴 Ландшафт / Двор / Балкон</option>
+                <option value="🏢">🏢 Офис / Коммерция</option>
+                <option value="⛩️">⛩️ Японский сад / Чайный дом</option>
+                <option value="📐">📐 Архитектура / Чертеж</option>
+            </select>
+            <input type="text" id="newTitle" class="neu-input" placeholder="Название проекта">
+            <textarea id="newComments" class="neu-input" rows="3" placeholder="Заметки / Замысел дизайнера клиенту..."></textarea>
+            <textarea id="newImg" class="neu-input" rows="3" placeholder="Ссылки на фото или пути (img/1.jpg), каждая с новой строки"></textarea>
+            <textarea id="newVideo" class="neu-input" rows="3" placeholder="Ссылки на видео / 3D-туры"></textarea>
+            <button onclick="saveProject()" class="neu-btn">🎋 Сохранить проект</button>
+            <button onclick="clearForm()" class="neu-btn">🍃 Очистить поля</button>
+            <hr style="margin: 25px 0; border: none; border-top: 1px dashed var(--shadow-dark);">
+            <h3>Список всех проектов <span class="jp-sub">[ 一覧 ]</span></h3>
+            <div id="projectsList" style="margin-top:15px;"></div>
+        </div>
+        <div id="projectCard" class="neu-card hidden">
+            <div class="jp-watermark">調和</div>
+            <h1 id="pTitle" style="display:flex; align-items:center; gap:10px;">Проект</h1>
+            <p style="color:#7a7a7a; margin: 8px 0 20px;">Авторы концепции: <strong>Simalee Studio 蓮</strong></p>
+            
+            <div id="pCommentsBlock" class="hidden" style="margin-bottom: 25px;">
+                <h3>Заметки мастера <span class="jp-sub">[ 助言 ]</span></h3>
+                <div id="pComments" class="comment-box"></div>
+            </div>
+            
+            <div id="pGalleryBlock" class="hidden" style="margin-bottom: 25px;">
+                <h3>Эскизы и чертежи <span class="jp-sub">[ 図面 ]</span></h3>
+                <div id="pGallery" class="gallery"></div>
+            </div>
+            
+            <div id="pVideoBlock" class="hidden" style="margin-bottom: 25px;">
+                <h3>3D-туры и видео <span class="jp-sub">[ 映像 ]</span></h3>
+                <div id="pVideo" class="video-list"></div>
+            </div>
+            
+            <div style="margin-top: 30px; margin-bottom: 25px;">
+                <h3>Связь с дизайнером <span class="jp-sub">[ 対話 ]</span></h3>
+                <div id="clientChatBox" class="chat-box"></div>
+                <div style="display:flex; gap:10px; margin-top:12px;">
+                    <input type="text" id="clientChatInput" class="neu-input" placeholder="Напишите вопрос по проекту..." style="margin-bottom:0;">
+                    <button onclick="sendClientMessage()" class="neu-btn" style="white-space:nowrap; margin-bottom:0;">💬 Отправить</button>
+                </div>
+            </div>
+            
+            <br><button onclick="logoutClient()" class="neu-btn btn-danger">🚪 Выйти из проекта</button>
+        </div>
+    </div>
     <script>
+        const TG_BOT_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN';
+        const TG_CHAT_ID = 'YOUR_TELEGRAM_CHAT_ID';
+        let currentActiveAdminPhone = null;
+        function playSound(type) {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain); gain.connect(ctx.destination);
+                if (type === 'click') {
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(400, ctx.currentTime);
+                    gain.gain.setValueAtTime(0.05, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+                    osc.start(); osc.stop(ctx.currentTime + 0.05);
+                } else if (type === 'success') {
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(783.99, ctx.currentTime + 0.25);
+                    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+                    osc.start(); osc.stop(ctx.currentTime + 0.3);
+                } else if (type === 'error') {
+                    osc.type = 'sawtooth'; osc.frequency.setValueAtTime(180, ctx.currentTime);
+                    gain.gain.setValueAtTime(0.12, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+                    osc.start(); osc.stop(ctx.currentTime + 0.2);
+                }
+            } catch(e) {}
+        }
+        function showToast(text, isError) {
+            const t = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = text;
+            t.classList.add('show');
+            playSound(isError ? 'error' : 'success');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+        function handleImgLoad(img) { img.style.opacity = '1'; }
+        function handleImgError(img) { img.style.display = 'none'; }
         function processImageUrl(url, imgId) {
             const imgEl = document.getElementById(imgId);
             if (!imgEl) return;
-            
             if (url.includes('disk.yandex') || url.includes('yadi.sk')) {
                 const apiUrl = 'https://cloud-api.yandex.net/v1/disk/public/resources?public_key=' + encodeURIComponent(url) + '&preview_size=M&preview_crop=true';
-                fetch(apiUrl)
-                    .then(r => r.json())
-                    .then(data => {
-                        if (data.preview) {
-                            imgEl.src = data.preview;
-                        } else if (data.sizes && data.sizes.length) {
-                            imgEl.src = data.sizes[0].url;
-                        }
-                    })
-                    .catch(() => {});
+                fetch(apiUrl).then(r => r.json()).then(data => {
+                    if (data.preview) imgEl.src = data.preview;
+                    else if (data.sizes && data.sizes.length) imgEl.src = data.sizes[0].url;
+                    else imgEl.src = url;
+                }).catch(() => { imgEl.src = url; });
             } else {
                 imgEl.src = url;
             }
         }
-        function renderGallery(urls) {
-            const container = document.getElementById('pGallery');
-            container.innerHTML = '';
-            urls.forEach((url, i) => {
-                const imgId = 'sketch_img_' + i;
-                const html = '<a href="' + url + '" target="_blank" class="gallery-item">'
-                           + '<div class="gallery-placeholder">🖼️ Открыть эскиз #' + (i+1) + '</div>'
-                           + '<img id="' + imgId + '" alt="Эскиз" onerror="this.style.opacity=0;">' 
-                           + '</a>';
-                container.innerHTML += html;
-                setTimeout(() => processImageUrl(url, imgId), 50);
-            });
+        document.addEventListener('DOMContentLoaded', checkSavedSession);
+        function checkSavedSession() {
+            const savedAdmin = localStorage.getItem('simalee_admin_persist');
+            const savedPhone = localStorage.getItem('simalee_client_persist');
+            if (savedAdmin === 'true') {
+                showAdminPanel();
+            } else if (savedPhone) {
+                openClientProject(savedPhone);
+            }
         }
-        document.addEventListener('DOMContentLoaded', () => {
-            renderGallery([
-                'https://i.imgur.com/8N41G3C.jpeg',
-                'https://i.imgur.com/2nL8332.jpeg'
-            ]);
-        });
+        function showAdminPanel() {
+            document.getElementById('clientAuth').classList.add('hidden');
+            document.getElementById('projectCard').classList.add('hidden');
+            document.getElementById('designerPanel').classList.remove('hidden');
+            document.getElementById('roleBtn').innerHTML = '🚪 Выйти из админки';
+            renderProjectsList();
+        }
+        function switchRole() {
+            playSound('click');
+            const isAdmin = localStorage.getItem('simalee_admin_persist') === 'true';
+            if (!isAdmin) {
+                document.getElementById('adminPassInput').value = '';
+                document.getElementById('passModal').classList.remove('hidden');
+                document.getElementById('adminPassInput').focus();
+            } else {
+                localStorage.removeItem('simalee_admin_persist');
+                location.reload();
+            }
+        }
+        function submitAdminPass() {
+            const pass = document.getElementById('adminPassInput').value;
+            if (pass === '00221922') {
+                localStorage.setItem('simalee_admin_persist', 'true');
+                localStorage.removeItem('simalee_client_persist');
+                closePassModal();
+                showAdminPanel();
+                showToast('Добро пожаловать, Simalee!', false);
+            } else {
+                showToast('Неверный пароль', true);
+            }
+        }
+        function closePassModal() {
+            playSound('click');
+            document.getElementById('passModal').classList.add('hidden');
+        }
+        function loginClient() {
+            playSound('click');
+            const phone = document.getElementById('clientPhone').value.trim();
+            if (!phone) { showToast('Введите номер телефона', true); return; }
+            if (openClientProject(phone)) {
+                localStorage.setItem('simalee_client_persist', phone);
+                showToast('Добро пожаловать!', false);
+            }
+        }
+        function logoutClient() {
+            playSound('click');
+            localStorage.removeItem('simalee_client_persist');
+            location.reload();
+        }
+        function saveProject() {
+            playSound('click');
+            const phone = document.getElementById('newPhone').value.trim();
+            if(!phone) { showToast('Заполните номер телефона!', true); return; }
+            const existingData = JSON.parse(localStorage.getItem('project_' + phone) || '{}');
+            const projectData = {
+                icon: document.getElementById('newIcon').value,
+                title: document.getElementById('newTitle').value,
+                comments: document.getElementById('newComments').value,
+                img: document.getElementById('newImg').value,
+                video: document.getElementById('newVideo').value,
+                messages: existingData.messages || []
+            };
+            localStorage.setItem('project_' + phone, JSON.stringify(projectData));
+            showToast('Проект успешно сохранен!', false);
+            clearForm();
+            renderProjectsList();
+        }
+        function renderProjectsList() {
+            const list = document.getElementById('projectsList');
+            list.innerHTML = '';
+            let count = 0;
+            for(let i=0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if(key.startsWith('project_')) {
+                    count++;
+                    const phone = key.replace('project_', '');
+                    const p = JSON.parse(localStorage.getItem(key));
+                    const icon = p.icon || '🏡';
+                    const msgCount = (p.messages || []).length;
+                    list.innerHTML += '<div class="project-item"><div class="project-header"><div><span class="project-icon">' + icon + '</span><strong>' + (p.title || 'Без названия') + '</strong> <span style="opacity:0.7;">(' + phone + ')</span></div><div><button onclick="openAdminChat(\'' + phone + '\')" class="neu-btn">💬 Чат (' + msgCount + ')</button><button onclick="editProject(\'' + phone + '\')" class="neu-btn">✏️ Изменить</button><button onclick="deleteProject(\'' + phone + '\')" class="neu-btn btn-danger">🗑️ Удалить</button></div></div></div>';
+                }
+            }
+            if(count === 0) list.innerHTML = '<p style="color:#7a7a7a;">Сохранённых проектов пока нет</p>';
+        }
+        function openAdminChat(phone) {
+            playSound('click');
+            currentActiveAdminPhone = phone;
+            const p = JSON.parse(localStorage.getItem('project_' + phone) || '{}');
+            document.getElementById('adminChatTitle').innerText = 'Чат: ' + (p.title || 'Проект');
+            document.getElementById('adminChatSub').innerText = 'Клиент: ' + phone;
+            renderAdminChatMessages(phone);
+            document.getElementById('adminChatModal').classList.remove('hidden');
+        }
+        function renderAdminChatMessages(phone) {
+            const p = JSON.parse(localStorage.getItem('project_' + phone) || '{}');
+            const box = document.getElementById('adminChatBox');
+            box.innerHTML = '';
+            const msgs = p.messages || [];
+            if (msgs.length === 0) {
+                box.innerHTML = '<p style="color:#7a7a7a; font-size:13px; text-align:center;">В этом проекте сообщений пока нет.</p>';
+            } else {
+                msgs.forEach(m => {
+                    const cls = m.sender === 'client' ? 'msg-client' : 'msg-designer';
+                    const senderName = m.sender === 'client' ? 'Клиент' : 'Simalee (Вы)';
+                    box.innerHTML += '<div class="chat-msg ' + cls + '"><strong>' + senderName + ':</strong><br>' + m.text + '</div>';
+                });
+                box.scrollTop = box.scrollHeight;
+            }
+        }
+        function sendAdminReply() {
+            playSound('click');
+            if (!currentActiveAdminPhone) return;
+            const input = document.getElementById('adminChatInput');
+            const text = input.value.trim();
+            if (!text) return;
+            const p = JSON.parse(localStorage.getItem('project_' + currentActiveAdminPhone) || '{}');
+            if (!p.messages) p.messages = [];
+            p.messages.push({ sender: 'designer', text: text, time: Date.now() });
+            localStorage.setItem('project_' + currentActiveAdminPhone, JSON.stringify(p));
+            input.value = '';
+            renderAdminChatMessages(currentActiveAdminPhone);
+            renderProjectsList();
+            showToast('Ответ отправлен клиенту!', false);
+        }
+        function closeAdminChat() {
+            playSound('click');
+            document.getElementById('adminChatModal').classList.add('hidden');
+            currentActiveAdminPhone = null;
+        }
+        function editProject(phone) {
+            playSound('click');
+            const p = JSON.parse(localStorage.getItem('project_' + phone));
+            document.getElementById('newPhone').value = phone;
+            document.getElementById('newIcon').value = p.icon || '🏡';
+            document.getElementById('newTitle').value = p.title || '';
+            document.getElementById('newComments').value = p.comments || '';
+            document.getElementById('newImg').value = p.img || '';
+            document.getElementById('newVideo').value = p.video || '';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        function deleteProject(phone) {
+            playSound('click');
+            if(confirm('Удалить проект для клиента ' + phone + '?')) {
+                localStorage.removeItem('project_' + phone);
+                showToast('Проект удален', false);
+                renderProjectsList();
+            }
+        }
+        function clearForm() {
+            playSound('click');
+            document.getElementById('newPhone').value = '';
+            document.getElementById('newIcon').selectedIndex = 0;
+            document.getElementById('newTitle').value = '';
+            document.getElementById('newComments').value = '';
+            document.getElementById('newImg').value = '';
+            document.getElementById('newVideo').value = '';
+        }
+        function openClientProject(phone) {
+            const data = localStorage.getItem('project_' + phone);
+            if(data) {
+                const p = JSON.parse(data);
+                const icon = p.icon || '🏡';
+                document.getElementById('clientAuth').classList.add('hidden');
+                document.getElementById('designerPanel').classList.add('hidden');
+                document.getElementById('projectCard').classList.remove('hidden');
+                document.getElementById('pTitle').innerHTML = '<span>' + icon + '</span> <span>' + (p.title || 'Ваш проект') + '</span>';
+                
+                if(p.comments && p.comments.trim()) {
+                    document.getElementById('pComments').innerText = p.comments;
+                    document.getElementById('pCommentsBlock').classList.remove('hidden');
+                } else { document.getElementById('pCommentsBlock').classList.add('hidden'); }
+                
+                if(p.img && p.img.trim()) {
+                    const imgs = p.img.split(/[,\n]/).map(s => s.trim()).filter(Boolean);
+                    let html = '';
+                    imgs.forEach((url, i) => {
+                        const imgId = 'img_item_' + i;
+                        html += '<a href="' + url + '" target="_blank" class="gallery-item">'
+                               + '<div class="gallery-placeholder"><span>🖼️</span><span>Эскиз #' + (i+1) + '</span></div>'
+                               + '<img id="' + imgId + '" alt="Эскиз" onload="handleImgLoad(this)" onerror="handleImgError(this)">'
+                               + '</a>';
+                        setTimeout(() => processImageUrl(url, imgId), 30);
+                    });
+                    document.getElementById('pGallery').innerHTML = html;
+                    document.getElementById('pGalleryBlock').classList.remove('hidden');
+                } else { document.getElementById('pGalleryBlock').classList.add('hidden'); }
+                
+                if(p.video && p.video.trim()) {
+                    const vids = p.video.split(/[,\n]/).map(s => s.trim()).filter(Boolean);
+                    let html = '';
+                    vids.forEach((url, i) => { html += '<a href="' + url + '" target="_blank" class="neu-btn" style="display:inline-block;">🎬 Видеоматериал #' + (i+1) + '</a>'; });
+                    document.getElementById('pVideo').innerHTML = html;
+                    document.getElementById('pVideoBlock').classList.remove('hidden');
+                } else { document.getElementById('pVideoBlock').classList.add('hidden'); }
+                
+                renderClientChatMessages(phone);
+                return true;
+            } else {
+                showToast('Проект для этого номера не найден!', true);
+                return false;
+            }
+        }
+        function renderClientChatMessages(phone) {
+            const p = JSON.parse(localStorage.getItem('project_' + phone) || '{}');
+            const box = document.getElementById('clientChatBox');
+            box.innerHTML = '';
+            const msgs = p.messages || [];
+            if (msgs.length === 0) {
+                box.innerHTML = '<p style="color:#7a7a7a; font-size:13px; text-align:center;">Нет сообщений. Напишите первый вопрос дизайнеру!</p>';
+            } else {
+                msgs.forEach(m => {
+                    const cls = m.sender === 'client' ? 'msg-client' : 'msg-designer';
+                    box.innerHTML += '<div class="chat-msg ' + cls + '">' + m.text + '</div>';
+                });
+                box.scrollTop = box.scrollHeight;
+            }
+        }
+        function sendClientMessage() {
+            playSound('click');
+            const phone = localStorage.getItem('simalee_client_persist');
+            const input = document.getElementById('clientChatInput');
+            const text = input.value.trim();
+            if (!text || !phone) return;
+            const p = JSON.parse(localStorage.getItem('project_' + phone) || '{}');
+            if (!p.messages) p.messages = [];
+            p.messages.push({ sender: 'client', text: text, time: Date.now() });
+            localStorage.setItem('project_' + phone, JSON.stringify(p));
+            input.value = '';
+            renderClientChatMessages(phone);
+            showToast('Сообщение отправлено!', false);
+            if (TG_BOT_TOKEN !== 'YOUR_TELEGRAM_BOT_TOKEN') {
+                const msgText = '💬 *Новое сообщение от клиента!*\n📱 Телефон: ' + phone + '\nПроект: ' + (p.title || 'Без названия') + '\n\n*Текст:* ' + text;
+                fetch('https://api.telegram.org/bot' + TG_BOT_TOKEN + '/sendMessage', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: TG_CHAT_ID, text: msgText, parse_mode: 'Markdown' })
+                }).catch(() => {});
+            }
+        }
     </script>
 </body>
 </html>
