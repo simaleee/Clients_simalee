@@ -298,6 +298,20 @@
             transform: translateY(0);
         }
 
+        #fullscreen-menu { overflow-y: auto; }
+        .games-nav { grid-column: 1 / -1; }
+        .menu-wrapper.games-open { align-items: flex-start; padding-bottom: 24px; }
+        .games-container { max-width: 1050px; }
+        .games-container[hidden], #section-menu[hidden] { display: none; }
+        .game-preview { width: 100%; max-height: 260px; object-fit: cover; border-radius: 18px; margin-bottom: 20px; }
+        .game-description { line-height: 1.6; color: #606c76; max-width: 650px; margin: 12px auto 20px; }
+        .game-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 14px; margin: 20px 0; }
+        .game-actions .nav-btn { text-decoration: none; min-width: 190px; }
+        .game-meta { color: #606c76; font-size: 13px; }
+        .game-frame { display: block; width: 100%; height: min(76vh, 780px); border: 0; border-radius: 18px; background: #101c1b; margin: 20px 0; }
+        .game-frame[hidden], .game-preview[hidden], #play-soryy[hidden] { display: none; }
+        .game-link { color: #344b65; text-underline-offset: 3px; }
+
         @media screen and (max-width: 900px) and (orientation: portrait) {
             #orientation-warning {
                 display: flex;
@@ -327,7 +341,7 @@
             <button class="back-btn" onclick="goBack()">← Назад</button>
         </div>
         <div class="menu-wrapper">
-            <div class="menu-container">
+            <div class="menu-container" id="section-menu">
                 <div class="menu-title">Выберите раздел</div>
                 <div class="nav-grid">
                     <button class="nav-btn" onclick="playClickSound()">🎨 Дизайн</button>
@@ -336,8 +350,24 @@
                     <button class="nav-btn" onclick="playClickSound()">💡 Консультация</button>
                     <button class="nav-btn" onclick="playClickSound()">ℹ️ Информация</button>
                     <button class="nav-btn" onclick="playClickSound()">💬 Чат</button>
+                    <button class="nav-btn games-nav" onclick="openGames()">🎮 Разработка игр</button>
                 </div>
             </div>
+            <section class="menu-container games-container" id="games-section" hidden aria-labelledby="games-title">
+                <h2 class="menu-title" id="games-title" tabindex="-1">Разработка игр</h2>
+                <img class="game-preview" id="soryy-preview" src="assets/soryy-boat.png" alt="Братья на лодке в затопленном японском квартале — кадр из Soryy" width="1200" height="675" loading="lazy">
+                <p class="game-meta">В разработке · WebGL и Android · 0.6.4</p>
+                <h2>Soryy — Держись рядом</h2>
+                <p class="game-description">Тихое путешествие двух братьев по Японии после катастрофы. Исследуй затопленные улицы, помогай людям и преодолевай препятствия вместе с младшим братом.</p>
+                <p class="game-meta">Первая загрузка — около 200 МБ. Для игры удобнее компьютер и полноэкранный режим.</p>
+                <div class="game-actions">
+                    <button class="nav-btn" id="play-soryy" onclick="launchGame()">▶ Играть в браузере</button>
+                    <a class="nav-btn" href="https://github.com/simaleee/Soryy-updates/releases/download/v0.6.4/Soryy-0.6.4-test16-arm64.apk">↓ Скачать APK</a>
+                </div>
+                <iframe class="game-frame" id="soryy-frame" title="Soryy — браузерная игра" allow="autoplay; fullscreen; gamepad" allowfullscreen hidden></iframe>
+                <p class="game-meta">WASD / стрелки — движение · E — действие · F — взять брата · Пробел — тормоз на тросе. Поддерживается геймпад.</p>
+                <p class="game-description"><a class="game-link" href="https://simaleee.github.io/Soryy-web/" target="_blank" rel="noopener">Открыть игру в отдельной вкладке ↗</a></p>
+            </section>
         </div>
     </div>
 
@@ -461,6 +491,18 @@
 
         function goBack() {
             playClickSound();
+            if (!document.getElementById('games-section').hidden) {
+                document.getElementById('soryy-frame').src = 'about:blank';
+                document.getElementById('soryy-frame').hidden = true;
+                document.getElementById('soryy-preview').hidden = false;
+                document.getElementById('play-soryy').hidden = false;
+                document.getElementById('games-section').hidden = true;
+                document.getElementById('section-menu').hidden = false;
+                document.querySelector('.menu-wrapper').classList.remove('games-open');
+                document.querySelector('.back-btn').textContent = '← Назад';
+                document.querySelector('.games-nav').focus();
+                return;
+            }
             const mainScreen = document.getElementById('mainScreen');
             const menu = document.getElementById('fullscreen-menu');
 
@@ -475,6 +517,25 @@
             setTimeout(() => {
                 mainScreen.classList.remove('dissolving');
             }, 300);
+        }
+
+        function openGames() {
+            playClickSound();
+            document.getElementById('section-menu').hidden = true;
+            document.getElementById('games-section').hidden = false;
+            document.querySelector('.menu-wrapper').classList.add('games-open');
+            document.querySelector('.back-btn').textContent = '← К разделам';
+            document.getElementById('games-title').focus();
+        }
+
+        function launchGame() {
+            playClickSound();
+            const frame = document.getElementById('soryy-frame');
+            frame.src = 'https://simaleee.github.io/Soryy-web/';
+            frame.hidden = false;
+            document.getElementById('soryy-preview').hidden = true;
+            document.getElementById('play-soryy').hidden = true;
+            frame.focus();
         }
     </script>
 </body>
